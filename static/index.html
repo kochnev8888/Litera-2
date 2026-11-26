@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Литера — шрифтовая студия с живым предпросмотром и экспортом в TrueType.">
+  <title>Литера — студия шрифтов</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="/" aria-label="Литера, главная"><span class="brand-mark" aria-hidden="true">Л</span>Литера<span class="brand-dot">.</span></a>
+      <div class="topbar-actions">
+        <button class="quiet-button" id="about-button" type="button">О проекте</button>
+        <button class="primary export-button" id="export-button" type="button" disabled><span class="download-icon" aria-hidden="true"></span>Скачать TTF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="intro" aria-labelledby="title">
+      <div>
+        <h1 id="title">Студия шрифтов<span class="brand-dot">.</span></h1>
+        <p>От идеи до файла шрифта. Опишите стиль или начните со своего TTF.</p>
+      </div>
+      <span class="mode-label"><span aria-hidden="true"></span><span id="mode-label">Демо-режим</span></span>
+    </section>
+
+    <div class="studio">
+      <aside class="sidebar" aria-label="Создание и настройка">
+        <section class="panel brief" aria-labelledby="brief-title">
+          <h2 id="brief-title">Новый шрифт</h2>
+          <div class="switcher" role="group" aria-label="Источник шрифта">
+            <button id="prompt-mode" type="button" aria-pressed="true">По описанию</button>
+            <button id="import-mode" type="button" aria-pressed="false">Из файла</button>
+          </div>
+
+          <form id="prompt-form">
+            <label class="field-label" for="prompt">Какой шрифт вам нужен?</label>
+            <textarea id="prompt" name="prompt" placeholder="Например, выразительная антиква для культурного журнала" required minlength="3" maxlength="500" rows="3"></textarea>
+            <div class="suggestions" aria-label="Примеры описаний">
+              <button type="button" data-prompt="Элегантный редакционный шрифт с засечками для журнала">Журнал</button>
+              <button type="button" data-prompt="Минималистичный геометрический гротеск для интерфейса">Интерфейс</button>
+              <button type="button" data-prompt="Моноширинный технический шрифт для кода и терминала">Терминал</button>
+            </div>
+            <button class="primary generate" id="generate-button" type="submit"><span class="sparkle" aria-hidden="true">✦</span><span>Подобрать варианты</span></button>
+          </form>
+
+          <div id="import-panel" hidden>
+            <label class="drop-zone" id="drop-zone" for="font-upload">
+              <span aria-hidden="true" class="upload-mark">↑</span>
+              <strong>Выберите файл</strong>
+              <span>или перетащите его сюда</span>
+              <small>TTF или OTF · до 10 МБ</small>
+              <input id="font-upload" type="file" accept=".ttf,.otf,font/ttf,font/otf">
+            </label>
+            <dl class="font-info" id="font-info" hidden>
+              <div><dt>Семейство</dt><dd id="import-family"></dd></div>
+              <div><dt>Начертание</dt><dd id="import-style"></dd></div>
+              <div><dt>Формат</dt><dd id="import-format"></dd></div>
+              <div><dt>Глифы</dt><dd id="import-glyphs"></dd></div>
+              <div><dt>Насыщенность</dt><dd id="import-weight"></dd></div>
+              <div><dt>Ширина</dt><dd id="import-width"></dd></div>
+              <div><dt>Наклон</dt><dd id="import-slant"></dd></div>
+              <div><dt>Контраст</dt><dd id="import-contrast"></dd></div>
+              <div><dt>x-height</dt><dd id="import-xheight"></dd></div>
+              <div><dt>Засечки</dt><dd id="import-serif"></dd></div>
+            </dl>
+          </div>
+          <p class="feedback" id="source-status" role="status" hidden></p>
+        </section>
+
+        <section class="panel adjustments" aria-labelledby="adjustments-title">
+          <div class="section-head">
+            <h2 id="adjustments-title">Настройки</h2>
+            <button class="text-button" id="reset-button" type="button" disabled>Сбросить</button>
+          </div>
+          <div class="controls">
+            <div class="range-row">
+              <label for="weight">Насыщенность</label>
+              <output for="weight" id="weight-value">400</output>
+              <input id="weight" type="range" min="400" max="700" value="400" step="1" disabled>
+            </div>
+            <div class="range-row">
+              <label for="width">Ширина</label>
+              <output for="width" id="width-value">100%</output>
+              <input id="width" type="range" min="75" max="125" value="100" step="1" disabled>
+            </div>
+            <div class="range-row">
+              <label for="tracking">Трекинг</label>
+              <output for="tracking" id="tracking-value">0</output>
+              <input id="tracking" type="range" min="-35" max="100" value="0" step="1" disabled>
+            </div>
+            <div class="range-row">
+              <label for="slant">Наклон</label>
+              <output for="slant" id="slant-value">0°</output>
+              <input id="slant" type="range" min="-12" max="16" value="0" step="1" disabled>
+            </div>
+            <div class="range-row">
+              <label for="contrast">Контраст</label>
+              <output for="contrast" id="contrast-value">0.35</output>
+              <input id="contrast" type="range" min="0" max="1" value="0.35" step="0.01" disabled>
+            </div>
+            <div class="range-row">
+              <label for="roundness">Скругление</label>
+              <output for="roundness" id="roundness-value">0.15</output>
+              <input id="roundness" type="range" min="0" max="1" value="0.15" step="0.01" disabled>
+            </div>
+            <div class="range-row">
+              <label for="sharpness">Острота</label>
+              <output for="sharpness" id="sharpness-value">0.50</output>
+              <input id="sharpness" type="range" min="0" max="1" value="0.5" step="0.01" disabled>
+            </div>
+            <div class="range-row">
+              <label for="x_height">Высота строчных</label>
+              <output for="x_height" id="x_height-value">520</output>
+              <input id="x_height" type="range" min="300" max="760" value="520" step="1" disabled>
+            </div>
+            <div class="field-row">
+              <label class="check-row"><input id="serif" type="checkbox" disabled> Засечки</label>
+              <label class="select-row">Окончания
+                <select id="terminal_style" disabled>
+                  <option value="flat">Прямые</option>
+                  <option value="rounded">Скруглённые</option>
+                  <option value="angled">Срезанные</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <div class="workspace">
+        <section class="panel preview" aria-labelledby="preview-title">
+          <div class="preview-head">
+            <h2 id="preview-title">Предпросмотр</h2>
+            <div class="switcher preview-switcher" role="group" aria-label="Вид предпросмотра">
+              <button id="text-mode" type="button" aria-pressed="true">Текст</button>
+              <button id="glyph-mode" type="button" aria-pressed="false">Символы</button>
+            </div>
+          </div>
+
+          <div id="text-view">
+            <div class="specimen" id="specimen">
+              <div class="specimen-meta"><span>ОБРАЗЕЦ ШРИФТА</span><span id="specimen-category">АНТИКВА</span></div>
+              <div class="specimen-paper">
+                <div id="specimen-text" class="specimen-text" contenteditable="plaintext-only" role="textbox" aria-multiline="true" aria-label="Редактируемый текст образца" spellcheck="false">У каждого слова<br>свой характер.</div>
+              </div>
+              <div class="specimen-foot">
+                <span id="sample-alphabet" class="sample-alphabet">Аа Бб Вв Гг Дд · Aa Bb Cc Dd · 0123456789</span>
+                <span class="edit-hint">✎&nbsp; Текст можно изменить</span>
+              </div>
+            </div>
+            <div class="preview-toolbar">
+              <div class="size-control">
+                <label for="size">Размер</label>
+                <input type="range" id="size" min="24" max="140" value="88" aria-label="Размер образца">
+                <output id="size-value" for="size">88 px</output>
+              </div>
+              <button class="text-button" id="sample-button" type="button">Сменить текст <span aria-hidden="true">↻</span></button>
+            </div>
+          </div>
+
+          <div class="glyph-view" id="glyph-view" hidden>
+            <div class="glyph-head">
+              <div class="filters" role="group" aria-label="Набор символов">
+                <button type="button" data-set="cyrillic" aria-pressed="true">Кириллица</button>
+                <button type="button" data-set="latin" aria-pressed="false">Латиница</button>
+                <button type="button" data-set="symbols" aria-pressed="false">Цифры и знаки</button>
+              </div>
+              <span id="glyph-count" class="muted"></span>
+            </div>
+            <p class="glyph-summary" id="glyph-summary"></p>
+            <div class="glyph-grid" id="glyph-grid"></div>
+          </div>
+          <div class="preview-status" id="preview-status" role="status" hidden></div>
+        </section>
+
+        <section class="variants" aria-labelledby="variants-title">
+          <div class="section-head">
+            <h2 id="variants-title">Варианты шрифта</h2>
+            <span class="variant-counter" id="variant-count" aria-live="polite">3 варианта</span>
+          </div>
+          <div class="variant-grid" id="variant-grid" role="group" aria-label="Выберите гарнитуру">
+            <button class="variant editorial" type="button" disabled><span class="variant-specimen">Аа</span><strong>Редакционный</strong><small>Антиква</small></button>
+            <button class="variant grotesk" type="button" disabled><span class="variant-specimen">Аа</span><strong>Геометрический</strong><small>Гротеск</small></button>
+            <button class="variant mono" type="button" disabled><span class="variant-specimen">Аа</span><strong>Технический</strong><small>Моноширинный</small></button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <span>Литера · Шрифтовая студия</span><span>TrueType / OpenType</span>
+    </footer>
+  </main>
+
+  <dialog id="about-dialog" aria-labelledby="about-title">
+    <div class="dialog-head"><h2 id="about-title">О проекте</h2><form method="dialog"><button class="close-button" aria-label="Закрыть">×</button></form></div>
+    <p>Литера — прототип командного проекта «Шрифты от ИИ». В демо-режиме сервер подбирает открытые гарнитуры по ключевым словам и собирает TrueType из настроенных контуров.</p>
+    <p>Базовые гарнитуры Lora, IBM Plex Sans и JetBrains Mono распространяются по SIL Open Font License.</p>
+  </dialog>
+
+  <dialog id="export-dialog" aria-labelledby="export-title">
+    <div class="dialog-head"><h2 id="export-title">Скачать шрифт</h2><form method="dialog"><button class="close-button" aria-label="Закрыть">×</button></form></div>
+    <form id="export-form">
+      <p id="export-summary"></p>
+      <label class="field-label" for="font-name">Название семейства</label>
+      <input id="font-name" maxlength="60" required autocomplete="off">
+      <button class="primary generate" id="confirm-export" type="submit"><span class="download-icon" aria-hidden="true"></span>Скачать TTF</button>
+      <p class="feedback" id="export-status" role="status" hidden></p>
+    </form>
+  </dialog>
+</body>
+</html>
